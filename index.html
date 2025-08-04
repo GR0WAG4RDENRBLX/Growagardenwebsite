@@ -1,136 +1,70 @@
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Grow a Garden Scrapbook</title>
-  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Luckiest Guy', sans-serif;
-      background: #fffbeb;
-      color: #333;
-      position: relative;
-      overflow-x: hidden;
-    }
+import React, { useState } from "react";
+import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
 
-    header {
-      background: #fff7d6;
-      padding: 3rem 1rem;
-      text-align: center;
-      border-bottom: 4px dashed #ffcc00;
-    }
+const themes = [
+  { name: "Minimal", className: "bg-white text-black" },
+  { name: "Dark", className: "bg-gray-900 text-white" },
+  { name: "Peach", className: "bg-orange-100 text-orange-900" }
+];
 
-    header h1 {
-      font-size: 3rem;
-      margin: 0;
-    }
-
-    header p {
-      margin-top: 1rem;
-      font-size: 1.2rem;
-    }
-
-    .sticker {
-      position: absolute;
-      width: 80px;
-      opacity: 0.95;
-      z-index: 1;
-    }
-
-    .gallery {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-      padding: 2rem;
-      z-index: 2;
-      position: relative;
-    }
-
-    .card {
-      width: 200px;
-      background: #ffeef0;
-      padding: 1rem;
-      border-radius: 1rem;
-      box-shadow: 4px 4px 0px #d3d3d3;
-      transform: rotate(-2deg);
-    }
-
-    .card img {
-      width: 100%;
-      border-radius: 8px;
-    }
-
-    .card p {
-      margin-top: 0.5rem;
-      font-size: 1rem;
-    }
-
-    .pets {
-      margin: 3rem auto;
-      text-align: center;
-    }
-
-    .pets h2 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-    }
-
-    .pets img {
-      width: 100px;
-      margin: 10px;
-      filter: drop-shadow(2px 2px 0 #aaa);
-    }
-
-    footer {
-      background: #fff7d6;
-      padding: 2rem 1rem;
-      text-align: center;
-      border-top: 4px dashed #ffcc00;
-      font-size: 1rem;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <h1>Grow a Garden Scrapbook</h1>
-    <p>My personal fan site with pets, plants & peaceful vibes 🌱</p>
-  </header>
-
-  <!-- Stickers (optional image sources) -->
-  <img src="sticker1.png" class="sticker" style="top:40px; left:20px;">
-  <img src="sticker2.png" class="sticker" style="top:100px; right:30px;">
-  <img src="sticker3.png" class="sticker" style="bottom:120px; left:50px;">
-  <img src="sticker4.png" class="sticker" style="bottom:60px; right:70px;">
-
-  <section class="gallery">
-    <div class="card">
-      <img src="plant1.png" alt="Sunflower Surprise">
-      <p>Sunflower Surprise</p>
+function ReviewBlock({ data, onChange }) {
+  return (
+    <div className="p-4 border rounded bg-white shadow">
+      <input
+        type="text"
+        placeholder="Name"
+        value={data.name}
+        onChange={(e) => onChange({ ...data, name: e.target.value })}
+        className="block w-full mb-2 p-2 border rounded"
+      />
+      <textarea
+        placeholder="Review text"
+        value={data.text}
+        onChange={(e) => onChange({ ...data, text: e.target.value })}
+        className="block w-full p-2 border rounded"
+      />
     </div>
-    <div class="card">
-      <img src="plant2.png" alt="Tulip Twirl">
-      <p>Tulip Twirl</p>
+  );
+}
+
+const blocks = {
+  review: ({ data, onChange }) => <ReviewBlock data={data} onChange={onChange} />,
+  button: () => (
+    <button className="m-4 px-4 py-2 bg-blue-500 text-white rounded">
+      Click Me
+    </button>
+  ),
+  image: () => (
+    <img
+      src="https://placekitten.com/400/200"
+      alt="Placeholder"
+      className="m-4 rounded"
+    />
+  ),
+  link: () => (
+    <a href="#" className="m-4 text-blue-600 underline">
+      Example Link
+    </a>
+  )
+};
+
+function Block({ id, type, data, onChange }) {
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({ id });
+  const style = transform
+    ? { transform: `translate(${transform.x}px, ${transform.y}px)` }
+    : undefined;
+
+  const blockRender = blocks[type];
+  return (
+    <div ref={setNodeRef} style={style} {...listeners} {...attributes} className="cursor-move mb-4">
+      {blockRender({ data, onChange })}
     </div>
-    <div class="card">
-      <img src="plant3.png" alt="Rose Radiance">
-      <p>Rose Radiance</p>
-    </div>
-  </section>
+  );
+}
 
-  <section class="pets">
-    <h2>🐾 Garden Pets</h2>
-    <img src="untitled_161_20250804023053" alt="racoon">
-    <img src="untitled161_20250804023008" alt="dragonfly">
-    <img src="untitled161_20250804022935" alt="kitsune">
-  </section>
-
-  <footer>
-    © 2025 Grow a Garden Fan Scrapbook | Made by Me 🌼
-  </footer>
-</body>
-</html>
-
+function Canvas({ blocksList, updateBlock }) {
+  const { setNodeRef } = useDroppable({ id: "canvas" });
+  return (
+    <div ref={setNodeRef} className="min-h-[500px] p-6 border rounded-lg bg-white shadow-inner">
+      {blocksList.map((block, idx) => (
