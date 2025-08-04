@@ -1,162 +1,136 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Grow a Garden</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grow a Garden Scrapbook</title>
+  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
-
     body {
       margin: 0;
-      font-family: 'Fredoka One', sans-serif;
-      background-color: #e8fff0;
-      color: #044d29;
-      text-align: center;
+      font-family: 'Luckiest Guy', sans-serif;
+      background: #fffbeb;
+      color: #333;
+      position: relative;
+      overflow-x: hidden;
     }
 
     header {
-      background: url('banner_gardener.png') center/cover no-repeat;
-      height: 250px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 36px;
-      font-weight: bold;
-      text-shadow: 2px 2px 4px #000;
+      background: #fff7d6;
+      padding: 3rem 1rem;
+      text-align: center;
+      border-bottom: 4px dashed #ffcc00;
     }
 
-    h2 {
-      margin-top: 40px;
-      font-size: 28px;
+    header h1 {
+      font-size: 3rem;
+      margin: 0;
+    }
+
+    header p {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+    }
+
+    .sticker {
+      position: absolute;
+      width: 80px;
+      opacity: 0.95;
+      z-index: 1;
     }
 
     .gallery {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      margin: 20px;
       gap: 20px;
+      padding: 2rem;
+      z-index: 2;
+      position: relative;
     }
 
     .card {
-      background-color: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      padding: 16px;
       width: 200px;
-      text-align: center;
-      transition: transform 0.2s;
-    }
-
-    .card:hover {
-      transform: scale(1.05);
+      background: #ffeef0;
+      padding: 1rem;
+      border-radius: 1rem;
+      box-shadow: 4px 4px 0px #d3d3d3;
+      transform: rotate(-2deg);
     }
 
     .card img {
-      width: 100px;
-      height: 100px;
-      object-fit: contain;
-    }
-
-    .footer {
-      background-color: #ccffdd;
-      padding: 20px;
-      margin-top: 40px;
-    }
-
-    .toggle-dark {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      padding: 8px 16px;
-      background-color: #fff;
-      border: none;
+      width: 100%;
       border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
+    }
+
+    .card p {
+      margin-top: 0.5rem;
+      font-size: 1rem;
     }
 
     .pets {
-      display: flex;
-      justify-content: center;
-      gap: 30px;
-      margin-top: 40px;
+      margin: 3rem auto;
+      text-align: center;
+    }
+
+    .pets h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
     }
 
     .pets img {
       width: 100px;
-      height: auto;
+      margin: 10px;
+      filter: drop-shadow(2px 2px 0 #aaa);
     }
 
-    .gardener {
-      margin-top: 40px;
-    }
-
-    .gardener img {
-      width: 120px;
-      height: auto;
-    }
-
-    .dark-mode {
-      background-color: #1e1e1e;
-      color: #e0e0e0;
-    }
-
-    .dark-mode .card {
-      background-color: #2a2a2a;
-      color: #fff;
-    }
-
-    .dark-mode .footer {
-      background-color: #2d4d38;
+    footer {
+      background: #fff7d6;
+      padding: 2rem 1rem;
+      text-align: center;
+      border-top: 4px dashed #ffcc00;
+      font-size: 1rem;
     }
   </style>
 </head>
 <body>
-  <button class="toggle-dark" onclick="toggleDarkMode()">Toggle Dark Mode</button>
-
   <header>
-    🌱 Grow a Garden
+    <h1>Grow a Garden Scrapbook</h1>
+    <p>My personal fan site with pets, plants & peaceful vibes 🌱</p>
   </header>
 
-  <h2>🌸 My Garden Gallery</h2>
-  <div class="gallery">
+  <!-- Stickers (optional image sources) -->
+  <img src="sticker1.png" class="sticker" style="top:40px; left:20px;">
+  <img src="sticker2.png" class="sticker" style="top:100px; right:30px;">
+  <img src="sticker3.png" class="sticker" style="bottom:120px; left:50px;">
+  <img src="sticker4.png" class="sticker" style="bottom:60px; right:70px;">
+
+  <section class="gallery">
     <div class="card">
-      <img src="plant1.png" alt="Plant 1">
+      <img src="plant1.png" alt="Sunflower Surprise">
       <p>Sunflower Surprise</p>
     </div>
     <div class="card">
-      <img src="plant2.png" alt="Plant 2">
+      <img src="plant2.png" alt="Tulip Twirl">
       <p>Tulip Twirl</p>
     </div>
     <div class="card">
-      <img src="plant3.png" alt="Plant 3">
+      <img src="plant3.png" alt="Rose Radiance">
       <p>Rose Radiance</p>
     </div>
-  </div>
+  </section>
 
-  <h2>🦊 Meet Your Pets!</h2>
-  <div class="pets">
-    <img src="fox_pet.png" alt="Fox Pet">
-    <img src="raccoon_pet.png" alt="Raccoon Pet">
-    <img src="firefly_pet.png" alt="Firefly Pet">
-  </div>
+  <section class="pets">
+    <h2>🐾 Garden Pets</h2>
+    <img src="untitled_161_20250804023053" alt="racoon">
+    <img src="untitled161_20250804023008" alt="dragonfly">
+    <img src="untitled161_20250804022935" alt="kitsune">
+  </section>
 
-  <div class="gardener">
-    <h2>👨‍🌾 Your Friendly Gardener</h2>
-    <img src="gardener_wave.png" alt="Gardener Waving">
-  </div>
-
-  <div class="footer">
-    © 2025 Your Garden | Made with 🌿 and care
-  </div>
-
-  <script>
-    function toggleDarkMode() {
-      document.body.classList.toggle('dark-mode');
-    }
-  </script>
+  <footer>
+    © 2025 Grow a Garden Fan Scrapbook | Made by Me 🌼
+  </footer>
 </body>
 </html>
 
