@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Grow a Garden</title>
+  <style>
+    :root {
+      --primary-color: #34d399;
+      --bg-color: #f0fdf4;
+      --text-color: #064e3b;
+      --card-bg: #ffffff;
+      --footer-bg: #d1fae5;
+      --button-bg: #10b981;
+    }
+
+    body.dark-mode {
+      --bg-color: #1f2937;
+      --text-color: #d1fae5;
+      --card-bg: #374151;
+      --footer-bg: #111827;
+      --button-bg: #22c55e;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    header {
+      background: linear-gradient(90deg, #34d399, #10b981);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      position: relative;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .toggle-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid white;
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    main {
+      padding: 2rem;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+    }
+
+    .card:hover {
+      transform: scale(1.03);
+    }
+
+    .card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .card p {
+      padding: 1rem;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: var(--footer-bg);
+      color: var(--text-color);
+      margin-top: 3rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🌱 Grow a Garden</h1>
+    <p>Plant your ideas, and watch them bloom!</p>
+    <button class="toggle-btn" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+  </header>
+
+  <main>
+    <h2>🌼 My Garden Gallery</h2>
+    <div class="gallery">
+      <div class="card">
+        <img src="your-image1.jpg" alt="Plant 1">
+        <p>Sunflower Surprise</p>
+      </div>
+      <div class="card">
+        <img src="your-image2.jpg" alt="Plant 2">
+        <p>Tulip Twirl</p>
+      </div>
+      <div class="card">
+        <img src="your-image3.jpg" alt="Plant 3">
+        <p>Rose Radiance</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Your Garden | Made with 🌿 and care</p>
+  </footer>
+
+  <!-- 🎵 Invisible YouTube Music Embed -->
+  <div style="display:none">
+    <iframe
+      width="0"
+      height="0"
+      src="https://www.youtube.com/embed/tOidHFzr3_A?autoplay=1&loop=1&playlist=tOidHFzr3_A"
+      frameborder="0"
+      allow="autoplay"
+      allowfullscreen
+    ></iframe>
+  </div>
+
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    }
+
+    window.onload = function () {
+      if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    }
+  </script>
+
+</body>
+</html>
