@@ -67,4 +67,38 @@ function Canvas({ blocksList, updateBlock }) {
   const { setNodeRef } = useDroppable({ id: "canvas" });
   return (
     <div ref={setNodeRef} className="min-h-[500px] p-6 border rounded-lg bg-white shadow-inner">
-      {blocksList.map((block, idx) => (
+      {blocksList.map((block, idx) => ( <div className="flex gap-2">
+  <button
+    onClick={() => {
+      const json = JSON.stringify(blocksList, null, 2);
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "page.json";
+      a.click();
+    }}
+    className="px-3 py-1 border rounded shadow-sm"
+  >
+    Export JSON
+  </button>
+
+  <input
+    type="file"
+    accept="application/json"
+    onChange={(e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const imported = JSON.parse(event.target.result);
+          setBlocksList(imported);
+        } catch (err) {
+          alert("Invalid JSON file.");
+        }
+      };
+      reader.readAsText(file);
+    }}
+    className="px-3 py-1 border rounded shadow-sm bg-white text-bla
+
