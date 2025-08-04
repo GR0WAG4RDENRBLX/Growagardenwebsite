@@ -1,104 +1,130 @@
+// Dupe Pets Website – React + Tailwind + Firebase
+// This is a simplified starting point – more features like edit mode can be added on top
 
-import React, { useState } from "react";
-import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
+import { useState, useEffect } from 'react';
+import { initializeApp } from 'firebase/app';
+import {
+  getFirestore, collection, addDoc, getDocs, onSnapshot
+} from 'firebase/firestore';
+import {
+  getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
+} from 'firebase/auth';
 
-const themes = [
-  { name: "Minimal", className: "bg-white text-black" },
-  { name: "Dark", className: "bg-gray-900 text-white" },
-  { name: "Peach", className: "bg-orange-100 text-orange-900" }
-];
-
-function ReviewBlock({ data, onChange }) {
-  return (
-    <div className="p-4 border rounded bg-white shadow">
-      <input
-        type="text"
-        placeholder="Name"
-        value={data.name}
-        onChange={(e) => onChange({ ...data, name: e.target.value })}
-        className="block w-full mb-2 p-2 border rounded"
-      />
-      <textarea
-        placeholder="Review text"
-        value={data.text}
-        onChange={(e) => onChange({ ...data, text: e.target.value })}
-        className="block w-full p-2 border rounded"
-      />
-    </div>
-  );
-}
-
-const blocks = {
-  review: ({ data, onChange }) => <ReviewBlock data={data} onChange={onChange} />,
-  button: () => (
-    <button className="m-4 px-4 py-2 bg-blue-500 text-white rounded">
-      Click Me
-    </button>
-  ),
-  image: () => (
-    <img
-      src="https://placekitten.com/400/200"
-      alt="Placeholder"
-      className="m-4 rounded"
-    />
-  ),
-  link: () => (
-    <a href="#" className="m-4 text-blue-600 underline">
-      Example Link
-    </a>
-  )
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_BUCKET",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID",
 };
 
-function Block({ id, type, data, onChange }) {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({ id });
-  const style = transform
-    ? { transform: `translate(${transform.x}px, ${transform.y}px)` }
-    : undefined;
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
 
-  const blockRender = blocks[type];
+export default function DupePetsSite() {
+  const [reviews, setReviews] = useState([]);
+  const [reviewText, setReviewText] = useState('');
+  const [stars, setStars] = useState(5);
+  const [user, setUser] = useState(null);
+  const reviewsRef = collection(db, 'reviews');
+
+  useEffect(() => {
+    const unsub = onSnapshot(reviewsRef, snapshot => {
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setReviews(data);
+    });
+    return () => unsub();
+  }, []);
+
+  useEffect(() => {
+    onAuthStateChanged(auth, setUser);
+  }, []);
+
+  const handleSubmit = async () => {
+    if (!reviewText.trim()) return;
+    await addDoc(reviewsRef, {
+      text: reviewText,
+      stars,
+      timestamp: Date.now()
+    });
+    setReviewText('');
+    setStars(5);
+  };
+
+  const login = () => {
+    const email = 'tautest_aliens_7f@icloud.com';
+    const password = prompt("Enter your admin password:");
+    if (password) {
+      signInWithEmailAndPassword(auth, email, password).catch(alert);
+    }
+  };
+
+  const logout = () => signOut(auth);
+
   return (
-    <div ref={setNodeRef} style={style} {...listeners} {...attributes} className="cursor-move mb-4">
-      {blockRender({ data, onChange })}
+    <div className="bg-gradient-to-b from-sky-300 to-green-400 min-h-screen font-sans text-center">
+      <audio autoPlay loop controls className="hidden">
+        <source src="/audio/chillhop.mp3" type="audio/mp3" />
+      </audio>
+
+      <div className="overflow-hidden h-6 text-white bg-red-500 animate-marquee whitespace-nowrap">
+        welcome to grow a garden dupe pets ! :) welcome to grow a garden dupe pets ! :) 
+      </div>
+
+      <div className="py-10 px-4">
+        <h1 className="text-xl md:text-3xl font-bold text-white mb-4">
+          this is a cozy little website where we get past the system and dupe your pets! 100% guaranteed we dupe pets, review list
+        </h1>
+
+        <img src="/images/funny.png" alt="dupe mascot" className="mx-auto my-4 w-40" />
+
+        <div className="bg-white p-4 rounded-xl shadow-xl w-full max-w-md mx-auto">
+          <p className="mb-2">hi...type a message to know more about me! ^^</p>
+          <input
+            value={reviewText}
+            onChange={e => setReviewText(e.target.value)}
+            placeholder="type something..."
+            className="border px-2 py-1 w-full"
+          />
+          <div className="flex items-center justify-between mt-2">
+            <select
+              value={stars}
+              onChange={e => setStars(+e.target.value)}
+              className="border p-1"
+            >
+              {[1, 2, 3, 4, 5].map(n => (
+                <option key={n} value={n}>{n}⭐</option>
+              ))}
+            </select>
+            <button onClick={handleSubmit} className="bg-blue-500 text-white px-3 py-1 rounded">send!</button>
+          </div>
+        </div>
+
+        <div className="mt-10">
+          <h2 className="text-lg font-bold text-white">⭐ Latest Reviews</h2>
+          <div className="mt-2 space-y-4">
+            {reviews.map(r => (
+              <div key={r.id} className="bg-white p-3 rounded shadow w-full max-w-md mx-auto text-left">
+                <div className="font-bold">{r.stars}⭐</div>
+                <p>{r.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {user ? (
+          <button onClick={logout} className="mt-10 text-sm text-white underline">Log out</button>
+        ) : (
+          <button onClick={login} className="mt-10 text-sm text-white underline">Admin Login</button>
+        )}
+      </div>
+
+      <footer className="fixed bottom-0 w-full bg-red-500 text-white flex justify-around p-2">
+        <span>⭐</span><span>➕</span><span>📁</span><span>📋</span>
+      </footer>
     </div>
   );
 }
-
-function Canvas({ blocksList, updateBlock }) {
-  const { setNodeRef } = useDroppable({ id: "canvas" });
-  return (
-    <div ref={setNodeRef} className="min-h-[500px] p-6 border rounded-lg bg-white shadow-inner">
-      {blocksList.map((block, idx) => ( <div className="flex gap-2">
-  <button
-    onClick={() => {
-      const json = JSON.stringify(blocksList, null, 2);
-      const blob = new Blob([json], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "page.json";
-      a.click();
-    }}
-    className="px-3 py-1 border rounded shadow-sm"
-  >
-    Export JSON
-  </button>
-
-  <input
-    type="file"
-    accept="application/json"
-    onChange={(e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        try {
-          const imported = JSON.parse(event.target.result);
-          setBlocksList(imported);
-        } catch (err) {
-          alert("Invalid JSON file.");
-        }
-      };
-      reader.readAsText(file);
-    }}
-    className="px-3 py-1 border rounded shadow-sm bg-white text-bla
 
