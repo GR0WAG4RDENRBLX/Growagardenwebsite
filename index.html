@@ -1,22 +1,23 @@
-// Dupe Pets Website – React + Tailwind + Firebase
-// This is a simplified starting point – more features like edit mode can be added on top
-
+// DupePetsSite.jsx
 import { useState, useEffect } from 'react';
 import { initializeApp } from 'firebase/app';
 import {
-  getFirestore, collection, addDoc, getDocs, onSnapshot
+  getFirestore, collection, addDoc, getDocs, onSnapshot, deleteDoc, doc
 } from 'firebase/firestore';
 import {
-  getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
 } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_BUCKET",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: 'YOUR_API_KEY',
+  authDomain: 'YOUR_AUTH_DOMAIN',
+  projectId: 'YOUR_PROJECT_ID',
+  storageBucket: 'YOUR_BUCKET',
+  messagingSenderId: 'YOUR_SENDER_ID',
+  appId: 'YOUR_APP_ID'
 };
 
 const app = initializeApp(firebaseConfig);
@@ -24,10 +25,11 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 export default function DupePetsSite() {
-  const [reviews, setReviews] = useState([]);
   const [reviewText, setReviewText] = useState('');
+  const [reviews, setReviews] = useState([]);
   const [stars, setStars] = useState(5);
   const [user, setUser] = useState(null);
+
   const reviewsRef = collection(db, 'reviews');
 
   useEffect(() => {
@@ -50,80 +52,101 @@ export default function DupePetsSite() {
       timestamp: Date.now()
     });
     setReviewText('');
-    setStars(5);
   };
 
-  const login = () => {
+  const handleLogin = async () => {
     const email = 'tautest_aliens_7f@icloud.com';
-    const password = prompt("Enter your admin password:");
+    const password = prompt('Enter your admin password:');
     if (password) {
-      signInWithEmailAndPassword(auth, email, password).catch(alert);
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (err) {
+        alert(err.message);
+      }
     }
   };
 
   const logout = () => signOut(auth);
 
-  return (
-    <div className="bg-gradient-to-b from-sky-300 to-green-400 min-h-screen font-sans text-center">
-      <audio autoPlay loop controls className="hidden">
-        <source src="/audio/chillhop.mp3" type="audio/mp3" />
-      </audio>
+  const deleteReview = async (id) => {
+    await deleteDoc(doc(db, 'reviews', id));
+  };
 
-      <div className="overflow-hidden h-6 text-white bg-red-500 animate-marquee whitespace-nowrap">
-        welcome to grow a garden dupe pets ! :) welcome to grow a garden dupe pets ! :) 
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-sky-300 to-green-200 text-center p-4 font-sans">
+      <h1 className="text-white text-2xl md:text-3xl font-bold mb-2">
+        welcome to grow a garden dupe pets ! :)
+      </h1>
+
+      {/* Character Mascot Placeholder */}
+      <div className="w-48 h-48 mx-auto mb-4 animate-bounce">
+        <img
+          src="/mascot-placeholder.png"
+          alt="dupe mascot"
+          className="w-full h-full object-contain"
+        />
       </div>
 
-      <div className="py-10 px-4">
-        <h1 className="text-xl md:text-3xl font-bold text-white mb-4">
-          this is a cozy little website where we get past the system and dupe your pets! 100% guaranteed we dupe pets, review list
-        </h1>
+      <p className="text-white text-xl font-semibold">
+        this is a cozy little website where we get past the system and dupe your pets!
+        <br />100% guaranteed we dupe pets, review list
+      </p>
 
-        <img src="/images/funny.png" alt="dupe mascot" className="mx-auto my-4 w-40" />
-
-        <div className="bg-white p-4 rounded-xl shadow-xl w-full max-w-md mx-auto">
-          <p className="mb-2">hi...type a message to know more about me! ^^</p>
-          <input
-            value={reviewText}
-            onChange={e => setReviewText(e.target.value)}
-            placeholder="type something..."
-            className="border px-2 py-1 w-full"
-          />
-          <div className="flex items-center justify-between mt-2">
-            <select
-              value={stars}
-              onChange={e => setStars(+e.target.value)}
-              className="border p-1"
-            >
-              {[1, 2, 3, 4, 5].map(n => (
-                <option key={n} value={n}>{n}⭐</option>
-              ))}
-            </select>
-            <button onClick={handleSubmit} className="bg-blue-500 text-white px-3 py-1 rounded">send!</button>
-          </div>
-        </div>
-
-        <div className="mt-10">
-          <h2 className="text-lg font-bold text-white">⭐ Latest Reviews</h2>
-          <div className="mt-2 space-y-4">
-            {reviews.map(r => (
-              <div key={r.id} className="bg-white p-3 rounded shadow w-full max-w-md mx-auto text-left">
-                <div className="font-bold">{r.stars}⭐</div>
-                <p>{r.text}</p>
-              </div>
+      <div className="bg-white/80 shadow-md rounded p-4 mt-6 max-w-md mx-auto">
+        <p className="text-sm mb-2">hi...type a message to know more about me! ^^</p>
+        <input
+          type="text"
+          placeholder="type something..."
+          value={reviewText}
+          onChange={e => setReviewText(e.target.value)}
+          className="w-full border p-2 rounded mb-2"
+        />
+        <div className="flex justify-between items-center">
+          <select
+            value={stars}
+            onChange={e => setStars(+e.target.value)}
+            className="border rounded p-1"
+          >
+            {[1, 2, 3, 4, 5].map(s => (
+              <option key={s} value={s}>{s} ⭐</option>
             ))}
-          </div>
+          </select>
+          <button onClick={handleSubmit} className="bg-pink-500 hover:bg-pink-600 text-white px-3 py-1 rounded">
+            send!
+          </button>
         </div>
+      </div>
 
+      {/* Latest Reviews */}
+      <div className="mt-8 text-left max-w-md mx-auto">
+        <h2 className="text-xl font-bold text-yellow-800 mb-2">⭐ Latest Reviews</h2>
+        {reviews.map(r => (
+          <div key={r.id} className="bg-white/90 rounded p-3 mb-2 shadow">
+            <p className="text-yellow-600">{'⭐'.repeat(r.stars)}</p>
+            <p className="text-black">{r.text}</p>
+            {user && (
+              <button
+                onClick={() => deleteReview(r.id)}
+                className="text-red-500 text-sm mt-1"
+              >delete</button>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Auth Controls */}
+      <div className="mt-4">
         {user ? (
-          <button onClick={logout} className="mt-10 text-sm text-white underline">Log out</button>
+          <button onClick={logout} className="text-sm text-gray-700 underline">Log out</button>
         ) : (
-          <button onClick={login} className="mt-10 text-sm text-white underline">Admin Login</button>
+          <button onClick={handleLogin} className="text-sm text-blue-700 underline">Admin Login</button>
         )}
       </div>
 
-      <footer className="fixed bottom-0 w-full bg-red-500 text-white flex justify-around p-2">
-        <span>⭐</span><span>➕</span><span>📁</span><span>📋</span>
-      </footer>
+      {/* Empty Message */}
+      {reviews.length === 0 && (
+        <div className="mt-6 text-purple-700">no one messaging you blud 💀</div>
+      )}
     </div>
   );
 }
