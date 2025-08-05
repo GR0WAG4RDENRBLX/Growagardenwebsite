@@ -1,8 +1,7 @@
-// DupePetsSite.jsx
 import { useState, useEffect } from 'react';
 import { initializeApp } from 'firebase/app';
 import {
-  getFirestore, collection, addDoc, getDocs, onSnapshot, deleteDoc, doc
+  getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc
 } from 'firebase/firestore';
 import {
   getAuth,
@@ -73,80 +72,92 @@ export default function DupePetsSite() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-300 to-green-200 text-center p-4 font-sans">
-      <h1 className="text-white text-2xl md:text-3xl font-bold mb-2">
-        welcome to grow a garden dupe pets ! :)
-      </h1>
+    <div className="min-h-screen bg-cover bg-center relative" style={{ backgroundImage: 'url(/bg.png)' }}>
+      {/* Floating mascots */}
+      <img src="/kitsune.png" className="absolute top-32 left-4 w-24 animate-bounce-slow" />
+      <img src="/dragonfly.png" className="absolute top-48 right-6 w-20 animate-wiggle-fly" />
 
-      {/* Character Mascot Placeholder */}
-      <div className="w-48 h-48 mx-auto mb-4 animate-bounce">
-        <img
-          src="/mascot-placeholder.png"
-          alt="dupe mascot"
-          className="w-full h-full object-contain"
-        />
-      </div>
+      <div className="text-center p-4 text-white z-10 relative">
+        <h1 className="text-3xl font-bold tracking-wide mb-2 drop-shadow">
+          welcome to grow a garden dupe pets ! :)
+        </h1>
 
-      <p className="text-white text-xl font-semibold">
-        this is a cozy little website where we get past the system and dupe your pets!
-        <br />100% guaranteed we dupe pets, review list
-      </p>
+        <div className="mx-auto w-48 h-48 animate-bounce">
+          <img
+            src="/mascot.gif"
+            alt="mascot"
+            className="w-full h-full object-contain"
+          />
+        </div>
 
-      <div className="bg-white/80 shadow-md rounded p-4 mt-6 max-w-md mx-auto">
-        <p className="text-sm mb-2">hi...type a message to know more about me! ^^</p>
-        <input
-          type="text"
-          placeholder="type something..."
-          value={reviewText}
-          onChange={e => setReviewText(e.target.value)}
-          className="w-full border p-2 rounded mb-2"
-        />
-        <div className="flex justify-between items-center">
-          <select
-            value={stars}
-            onChange={e => setStars(+e.target.value)}
-            className="border rounded p-1"
-          >
-            {[1, 2, 3, 4, 5].map(s => (
-              <option key={s} value={s}>{s} ⭐</option>
-            ))}
-          </select>
-          <button onClick={handleSubmit} className="bg-pink-500 hover:bg-pink-600 text-white px-3 py-1 rounded">
-            send!
-          </button>
+        <p className="text-xl text-white font-bold mt-6 leading-relaxed">
+          this is a cozy little website where we get<br />
+          past the system and dupe your pets!<br />
+          <span className="text-blue-100">100% guaranteed we dupe pets, review list</span>
+        </p>
+
+        {/* Chat Bubble Input Box */}
+        <div className="bg-white rounded-xl shadow-lg max-w-xs mx-auto mt-8 p-4 text-left text-black relative">
+          <p className="text-sm font-semibold mb-2">hi...type a message to know more about me! ^^</p>
+          <input
+            type="text"
+            value={reviewText}
+            onChange={e => setReviewText(e.target.value)}
+            placeholder="type something..."
+            className="w-full border p-2 rounded mb-2 text-sm"
+          />
+          <div className="flex justify-between items-center">
+            <select
+              value={stars}
+              onChange={e => setStars(+e.target.value)}
+              className="text-sm border rounded px-1 py-1 bg-white"
+            >
+              {[1, 2, 3, 4, 5].map(s => (
+                <option key={s} value={s}>{s} ⭐</option>
+              ))}
+            </select>
+            <button
+              onClick={handleSubmit}
+              className="bg-pink-400 hover:bg-pink-500 text-white text-xs px-3 py-1 rounded shadow"
+            >
+              send!
+            </button>
+          </div>
+        </div>
+
+        {/* Reviews */}
+        <div className="mt-10 max-w-md mx-auto">
+          <h2 className="text-white text-lg font-bold mb-2">⭐ Latest Reviews</h2>
+          {reviews.map(r => (
+            <div key={r.id} className="bg-white/90 rounded-xl p-3 mb-3 shadow text-left">
+              <p className="text-yellow-600">{'⭐'.repeat(r.stars)}</p>
+              <p className="text-black text-sm">{r.text}</p>
+              {user && (
+                <button
+                  onClick={() => deleteReview(r.id)}
+                  className="text-red-500 text-xs mt-1 underline"
+                >
+                  delete
+                </button>
+              )}
+            </div>
+          ))}
+          {reviews.length === 0 && (
+            <div className="mt-6 text-sm text-purple-100 bg-white/20 p-2 rounded-lg inline-block">
+              no one messaging you blud 💀
+            </div>
+          )}
+        </div>
+
+        {/* Admin */}
+        <div className="mt-4">
+          {user ? (
+            <button onClick={logout} className="text-white underline text-sm">Log out</button>
+          ) : (
+            <button onClick={handleLogin} className="text-white underline text-sm">Admin Login</button>
+          )}
         </div>
       </div>
-
-      {/* Latest Reviews */}
-      <div className="mt-8 text-left max-w-md mx-auto">
-        <h2 className="text-xl font-bold text-yellow-800 mb-2">⭐ Latest Reviews</h2>
-        {reviews.map(r => (
-          <div key={r.id} className="bg-white/90 rounded p-3 mb-2 shadow">
-            <p className="text-yellow-600">{'⭐'.repeat(r.stars)}</p>
-            <p className="text-black">{r.text}</p>
-            {user && (
-              <button
-                onClick={() => deleteReview(r.id)}
-                className="text-red-500 text-sm mt-1"
-              >delete</button>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* Auth Controls */}
-      <div className="mt-4">
-        {user ? (
-          <button onClick={logout} className="text-sm text-gray-700 underline">Log out</button>
-        ) : (
-          <button onClick={handleLogin} className="text-sm text-blue-700 underline">Admin Login</button>
-        )}
-      </div>
-
-      {/* Empty Message */}
-      {reviews.length === 0 && (
-        <div className="mt-6 text-purple-700">no one messaging you blud 💀</div>
-      )}
     </div>
   );
 }
